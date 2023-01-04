@@ -194,7 +194,7 @@ def handle_duplicates(remove, force):
     display_failures()
 
 def main():
-    parser = OptionParser(usage="python3 duprem [-rfg] DIR")
+    parser = OptionParser(usage="python3 -m duprem [-rfg] DIR")
     parser.add_option(
         "-g", "--debug", dest="debug", action="store_true",
         help="Enable debug output")
