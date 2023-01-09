@@ -126,7 +126,7 @@ def test_data_failure():
 out_data_failure = """Failures:
   %TESTDIR%/filetree/badpic2.jpg"""
 
-err_data_failure = """WARNING: Failure to extract JPEG data (broken data stream when reading image file): %TESTDIR%/filetree/badpic2.jpg"""
+err_data_failure = """ERROR: Failure to extract JPEG data (broken data stream when reading image file): %TESTDIR%/filetree/badpic2.jpg"""
 
 
 files_bmp_dup = [

@@ -8,6 +8,11 @@ from PIL import Image, UnidentifiedImageError
 BUF_SIZE = 65536
 
 class File:
+    """A general file
+
+    :param path: the path to the file
+    """
+
     def __init__(self, path):
         self.path = path
 
@@ -21,8 +26,9 @@ class File:
         :return: string, the hash value
         """
 
-        with open(self.path, 'rb') as f:
-            self.hash_file_bytes(f, hashfn)
+        # Using 'with' autocloses 'fl' when exiting the block.
+        with open(self.path, 'rb') as fl:
+            self.hash_file_bytes(fl, hashfn)
             return hashfn.hexdigest()
 
     def hash_file_bytes(self, fl, hashfn):
@@ -55,6 +61,7 @@ class ImageFile(File):
         """
 
         try:
+            # Using 'with' autocloses 'img' when exiting the block.
             # Raises UnidentifiedImageError on failure to open.
             with Image.open(self.path) as img:
                 try:
