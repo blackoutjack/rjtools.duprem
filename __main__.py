@@ -1,12 +1,13 @@
+#
+# Command-line entry point for the duprem module.
+#
 
 import os
 from optparse import OptionParser
 
-from util.msg import info
+from util.msg import info, dbg, set_debug
 
-from .file import find_duplicates_in_dir, handle_duplicates
-
-from .file import main
+from .duplicates import find_duplicates, handle_duplicates
 
 def main():
     parser = OptionParser(usage="python3 -m duprem [-rfg] DIR")
