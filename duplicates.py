@@ -258,8 +258,7 @@ def find_duplicates(paths):
             foundDuplicate = process_file(path) or foundDuplicate
         elif os.path.isdir(path):
             dbg("Basedir: %s" % path)
-            find_duplicates_in_dir(path)
-            foundDuplicate = process_file(path) or foundDuplicate
+            foundDuplicate = find_duplicates_in_dir(path) or foundDuplicate
         elif os.path.issymlink(path):
             # A link that points to neither a file nor a directory.
             err("Unresolved symlink: %s" % path)
