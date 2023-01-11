@@ -63,19 +63,25 @@ class ImageFile(File):
         try:
             # Using 'with' autocloses 'img' when exiting the block.
             # Raises UnidentifiedImageError on failure to open.
-            with Image.open(self.path) as img:
-                try:
-                    imagebytes = io.BytesIO()
-                    # Canonicalize by extracting bitmap data
-                    # Raises OSError on failure
-                    img.save(imagebytes, format='BMP')
-                    imagebytes.seek(0)
-                    self.hash_file_bytes(imagebytes, hashfn)
-                except OSError as ex:
-                    raise ImageError("Failure to extract %s data (%s): %s"
-                            % (img.format, str(ex), self.path))
+            with Image.open(self.path) as img, io.BytesIO() as bmpbytes:
+                # Canonicalize by extracting bitmap data
+                # Raises OSError on failure
+                img.save(bmpbytes, format='BMP')
+                bmpbytes.seek(0)
+                self.hash_file_bytes(bmpbytes, hashfn)
         except UnidentifiedImageError as ex:
             raise ImageError("Unable to open %s (%s): %s"
                     % (self.typename(), str(ex), self.path))
+        except OSError as ex:
+            raise ImageError("Failure to extract %s data (%s): %s"
+                    % (img.format, str(ex), self.path))
         return hashfn.hexdigest()
+
+class AudioFile(File):
+
+    @staticmethod
+    def is_audio(filepath):
+        _, ext = os.path.splitext(filepath)
+        return ext.lower() in [".mp3", ".flac", ".wav"]
+
 

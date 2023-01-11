@@ -2,7 +2,6 @@
 # Command-line entry point for the duprem module.
 #
 
-import os
 from optparse import OptionParser
 
 from util.msg import info, dbg, set_debug

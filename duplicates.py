@@ -3,7 +3,6 @@
 # Intended for use with media files such as images or audio.
 #
 
-import sys
 import os
 import hashlib
 from optparse import OptionParser
