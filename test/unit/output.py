@@ -6,11 +6,16 @@ import os
 
 from duprem.duplicates import find_duplicates, display_duplicates, display_failures, clear
 
-TEST_DIR = os.path.dirname(__file__)
+TEST_DIR = os.path.dirname(os.path.dirname(__file__))
+TEST_FILE_TREE = os.path.join(TEST_DIR, "filetree")
+
+def get_filepath(filename):
+    return os.path.join(TEST_FILE_TREE, filename)
+
 
 files_basic = [
-        os.path.join(TEST_DIR, "filetree", "empty1.txt"),
-        os.path.join(TEST_DIR, "filetree", "empty2.txt"),
+        get_filepath("empty1.txt"),
+        get_filepath("empty2.txt"),
     ]
 
 def test_basic():
@@ -24,8 +29,8 @@ out_basic = """Duplicate content:
 1: %TESTDIR%/filetree/empty2.txt"""
 
 files_no_dups = [
-        os.path.join(TEST_DIR, "filetree", "empty1.txt"),
-        os.path.join(TEST_DIR, "filetree", "basic.txt"),
+        get_filepath("empty1.txt"),
+        get_filepath("basic.txt"),
     ]
 
 def test_no_dups():
@@ -38,8 +43,8 @@ out_no_dups = ""
 
 
 files_jpeg_different_header = [
-        os.path.join(TEST_DIR, "filetree", "pic1.jpg"),
-        os.path.join(TEST_DIR, "filetree", "pic2.jpg"),
+        get_filepath("pic1.jpg"),
+        get_filepath("pic2.jpg"),
     ]
 
 def test_jpeg_dup():
@@ -54,8 +59,8 @@ out_jpeg_dup = """Duplicate image content:
 
 
 files_jpeg_different_image = [
-        os.path.join(TEST_DIR, "filetree", "pic1.jpg"),
-        os.path.join(TEST_DIR, "filetree", "pic3.jpg"),
+        get_filepath("pic1.jpg"),
+        get_filepath("pic3.jpg"),
     ]
 
 def test_jpeg_diff():
@@ -68,8 +73,8 @@ out_jpeg_diff = ""
 
 
 files_jpeg_extension = [
-        os.path.join(TEST_DIR, "filetree", "pic1.jpg"),
-        os.path.join(TEST_DIR, "filetree", "pic4.JPEG"),
+        get_filepath("pic1.jpg"),
+        get_filepath("pic4.JPEG"),
     ]
 
 def test_jpeg_extension():
@@ -84,7 +89,7 @@ out_jpeg_extension = """Duplicate image content:
 
 
 files_jpg_text = [
-        os.path.join(TEST_DIR, "filetree", "notapic.jpg"),
+        get_filepath("notapic.jpg"),
     ]
 
 def test_jpg_text():
@@ -99,8 +104,8 @@ err_jpg_text = ""
 
 
 files_twice = [
-        os.path.join(TEST_DIR, "filetree", "basic.txt"),
-        os.path.join(TEST_DIR, "filetree", "basic.txt"),
+        get_filepath("basic.txt"),
+        get_filepath("basic.txt"),
 ]
 
 def test_twice():
@@ -114,7 +119,7 @@ out_twice = ""
 
 # This file contains valid headers but bad image data.
 files_data_failure = [
-        os.path.join(TEST_DIR, "filetree", "badpic2.jpg"),
+        get_filepath("badpic2.jpg"),
     ]
 
 def test_data_failure():
@@ -130,8 +135,8 @@ err_data_failure = """ERROR: Failure to extract JPEG data (broken data stream wh
 
 
 files_bmp_dup = [
-        os.path.join(TEST_DIR, "filetree", "pic1.bmp"),
-        os.path.join(TEST_DIR, "filetree", "pic2.bmp"),
+        get_filepath("pic1.bmp"),
+        get_filepath("pic2.bmp"),
     ]
 
 def test_bmp_dup():
@@ -146,8 +151,8 @@ out_bmp_dup = """Duplicate image content:
 
 
 files_bmp_jpg = [
-        os.path.join(TEST_DIR, "filetree", "pic1.bmp"),
-        os.path.join(TEST_DIR, "filetree", "pic1.jpg"),
+        get_filepath("pic1.bmp"),
+        get_filepath("pic1.jpg"),
     ]
 
 def test_bmp_jpg():
@@ -162,8 +167,8 @@ out_bmp_jpg = """Duplicate image content:
 
 
 files_tiff_dup = [
-        os.path.join(TEST_DIR, "filetree", "pic1.tiff"),
-        os.path.join(TEST_DIR, "filetree", "pic2.tiff"),
+        get_filepath("pic1.tiff"),
+        get_filepath("pic2.tiff"),
     ]
 
 def test_tiff_dup():
@@ -178,8 +183,8 @@ out_tiff_dup = """Duplicate image content:
 
 
 files_tiff_jpg = [
-        os.path.join(TEST_DIR, "filetree", "pic1.tiff"),
-        os.path.join(TEST_DIR, "filetree", "pic1.jpg"),
+        get_filepath("pic1.tiff"),
+        get_filepath("pic1.jpg"),
     ]
 
 def test_tiff_jpg():

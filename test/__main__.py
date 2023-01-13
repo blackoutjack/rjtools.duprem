@@ -1,13 +1,13 @@
 
 import sys
 
-from util.testing import init_testing, run_tests
+from util.testing import init_testing
 
-def test():
-    from . import output
-
-    return run_tests(dir(), locals())
+from .unit import test as unittest
+from .user import test as usertest
 
 if __name__ == "__main__":
     init_testing()
-    sys.exit(test())
+    result = unittest.run()
+    result &= usertest.run()
+    sys.exit(result)
