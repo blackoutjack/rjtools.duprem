@@ -2,9 +2,8 @@
 import sys
 
 from util.testing import init_testing
-from . import test
+from . import run
 
-if __name__ == "__main__":
-    init_testing()
-    sys.exit(test())
+init_testing()
+sys.exit(run())
 

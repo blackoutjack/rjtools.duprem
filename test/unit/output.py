@@ -5,13 +5,40 @@
 import os
 
 from duprem.duplicates import find_duplicates, display_duplicates, display_failures, clear
+from duprem.file import ImageFile
 
-TEST_DIR = os.path.dirname(os.path.dirname(__file__))
+#TEST_DIR = os.path.dirname(os.path.dirname(__file__))
+TEST_DIR = os.path.join("/", "topdir")
 TEST_FILE_TREE = os.path.join(TEST_DIR, "filetree")
 
 def get_filepath(filename):
     return os.path.join(TEST_FILE_TREE, filename)
 
+files_is_image = [
+        get_filepath("pic1.bmp"),
+        get_filepath("pic1.jpg"),
+        get_filepath("pic1.tiff"),
+        get_filepath("pic2.bmp"),
+        get_filepath("pic2.jpg"),
+        get_filepath("pic2.tiff"),
+        get_filepath("pic3.jpg"),
+        get_filepath("pic4.JPEG"),
+        # This one has the image header, but bad data
+        get_filepath("badpic2.jpg"),
+    ]
+
+files_not_is_image = [
+        get_filepath("basic.txt"),
+        get_filepath("notapic.jpg"),
+    ]
+
+def test_is_image():
+    result = True
+    for file in files_is_image:
+        result &= ImageFile.is_image(file)
+    for file in files_not_is_image:
+        result &= not ImageFile.is_image(file)
+    return result
 
 files_basic = [
         get_filepath("empty1.txt"),

@@ -5,6 +5,8 @@
 import io
 from PIL import Image, UnidentifiedImageError
 
+from util import fs
+
 BUF_SIZE = 65536
 
 class File:
@@ -27,7 +29,7 @@ class File:
         """
 
         # Using 'with' autocloses 'fl' when exiting the block.
-        with open(self.path, 'rb') as fl:
+        with fs.binary_open(self.path) as fl:
             self.hash_file_bytes(fl, hashfn)
             return hashfn.hexdigest()
 
@@ -45,9 +47,14 @@ class ImageError(Exception):
 class ImageFile(File):
 
     @staticmethod
+    def open_image(filepath):
+        fl = fs.binary_open(filepath)
+        return Image.open(fl)
+
+    @staticmethod
     def is_image(filepath):
         try:
-            img = Image.open(filepath)
+            img = ImageFile.open_image(filepath)
             img.close()
         except UnidentifiedImageError:
             return False
@@ -63,7 +70,7 @@ class ImageFile(File):
         try:
             # Using 'with' autocloses 'img' when exiting the block.
             # Raises UnidentifiedImageError on failure to open.
-            with Image.open(self.path) as img, io.BytesIO() as bmpbytes:
+            with ImageFile.open_image(self.path) as img, io.BytesIO() as bmpbytes:
                 # Canonicalize by extracting bitmap data
                 # Raises OSError on failure
                 img.save(bmpbytes, format='BMP')

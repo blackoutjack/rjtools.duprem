@@ -3,11 +3,12 @@
 # Intended for use with media files such as images or audio.
 #
 
-import os
+import os.path
 import hashlib
 from optparse import OptionParser
 
 # My custom utility module
+from util import fs
 from util.msg import set_debug, dbg, info, warn, err
 from util.collections import update_multimap
 from util.type import type_check, type_error
@@ -50,7 +51,7 @@ def delete_files_except(filepaths, keep):
     for idx, path in enumerate(filepaths):
         if idx not in keep:
             print("> Deleting: %s" % path)
-            os.unlink(path)
+            fs.unlink(path)
         else:
             print(">  Keeping: %s" % path)
 
@@ -147,7 +148,7 @@ def already_processed(path):
     if path in processed_paths:
         prev_mtime = processed_paths[path]
         try:
-            mtime = os.path.getmtime(path)
+            mtime = fs.get_modify_time(path)
             # A 'None' value of 'prev_mtime' means the file was not accessible
             # before, but now it is.
             if prev_mtime is None or mtime > prev_mtime:
@@ -170,7 +171,7 @@ def set_processed(path):
     :param path: path to the file or directory
     '''
     try:
-        mtime = os.path.getmtime(path)
+        mtime = fs.get_modify_time(path)
     except OSError:
         mtime = None
     processed_paths[path] = mtime
@@ -192,7 +193,7 @@ def process_file(filepath):
 
     try:
         # Canonicalize the path
-        filepath = os.path.realpath(filepath, strict=True)
+        filepath = fs.get_real_path(filepath, strict=True)
     except OSError as ex:
         # Only produce failure output once for this invalid path.
         if not already_processed(filepath):
@@ -237,7 +238,7 @@ def find_duplicates_in_dir(basedir):
     if already_processed(basedir):
         return False
 
-    for subdir, dirs, files in os.walk(basedir):
+    for subdir, dirs, files in fs.walk(basedir):
         for file in files:
             filepath = os.path.join(subdir, file)
             foundDuplicate = process_file(filepath) or foundDuplicate
@@ -253,15 +254,15 @@ def find_duplicates(paths):
     """
     foundDuplicate = False
     for path in paths:
-        if os.path.isfile(path):
+        if fs.is_file(path):
             dbg("File: %s" % path)
             foundDuplicate = process_file(path) or foundDuplicate
-        elif os.path.isdir(path):
+        elif fs.is_dir(path):
             dbg("Basedir: %s" % path)
             foundDuplicate = find_duplicates_in_dir(path) or foundDuplicate
-        elif os.path.issymlink(path):
+        elif fs.is_link(path):
             # A link that points to neither a file nor a directory.
-            err("Unresolved symlink: %s" % path)
+            err("Unresolved link: %s" % path)
             failures.append(filepath)
         else:
             err("File not found: %s" % path)

@@ -1,12 +1,14 @@
 import os
 
+from util import fs
+
 def prep(args):
     args.insert(0, "python3")
     args.insert(1, "-m")
     args.insert(2, "duprem")
     return args
 
-TEST_DIR=os.path.dirname(os.path.dirname(__file__))
+TEST_DIR = os.path.dirname(__file__)
 TEST_FILE_TREE = os.path.join(TEST_DIR, "filetree")
 
 def get_filepath(filename):
