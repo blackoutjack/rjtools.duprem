@@ -1,15 +1,9 @@
 
-from util.testing import summarize_results
-from util import fs
+from util.testing import run_test_suites
 
 from . import unit
 from . import user
 
 def run():
-    unitresult = unit.run()
-    userresult = user.run()
-
-    summary = summarize_results("duprem", unitresult, userresult)
-    summary.print()
-    return summary
+    return run_test_suites("duprem", unit, user)
 
