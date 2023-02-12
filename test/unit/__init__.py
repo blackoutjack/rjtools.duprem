@@ -8,5 +8,5 @@ def run():
 
     init_stubs(fs) 
 
-    return run_tests(dir(), locals(), "duprem.unit")
+    return run_tests("duprem.unit", locals())
 
