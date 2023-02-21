@@ -26,7 +26,7 @@ def main():
 scan for duplicates""")
 
     set_debug(opts.debug)
-    dbg("Arguments: %r" % args)
+    #dbg("Arguments: %r" % args)
 
     found = find_duplicates(args)
     if found:

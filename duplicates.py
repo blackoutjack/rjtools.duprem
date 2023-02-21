@@ -47,7 +47,7 @@ def delete_files_except(filepaths, keep):
             type_check(item, int, "keep[%d]" % idx)
     else:
         type_error("keep", str(type(keep)), "<class 'int'> or <class list<class int>>")
-        
+
     for idx, path in enumerate(filepaths):
         if idx not in keep:
             print("> Deleting: %s" % path)
@@ -71,7 +71,7 @@ def delete_select_files(filepaths, force, desc):
     if force:
         # Delete all files except for the first.
         delete_files_except(filepaths, 0)
-            
+
     else:
         # Get input from the user for which file to retain.
         choice = None
@@ -87,20 +87,20 @@ def delete_select_files(filepaths, force, desc):
                 return False
             try:
                 choices = choice.split(",")
-                dbg("CHOICES: %r" % choices)    
+                #dbg("CHOICES: %r" % choices)
                 keep = []
                 for c in choices:
-                    dbg("C: %r" % c)
+                    #dbg("C: %r" % c)
                     num = int(c.strip())
-                    dbg("NUM: %d" % num)
+                    #dbg("NUM: %d" % num)
                     if num < 0 or num >= len(filepaths):
                         raise ValueError
                     keep.append(num)
-                dbg("KEEP: %r")
+                #dbg("KEEP: %r")
                 delete_files_except(filepaths, keep)
                 break
             except ValueError as ex:
-                dbg("E: %s" % str(ex))
+                #dbg("E: %s" % str(ex))
                 # Redo the input
                 pass
 
@@ -125,7 +125,7 @@ def display_failures():
         print("Failures:")
         for filepath in failures:
             print("  %s" % filepath)
-                    
+
 def display_duplicates():
     '''Output sets of paths that contain duplicate content.'''
 
@@ -205,7 +205,7 @@ def process_file(filepath):
     if already_processed(filepath):
         return False
 
-    dbg("Processing %s" % filepath)
+    #dbg("Processing %s" % filepath)
 
     hashfn = hashlib.sha1()
 
@@ -248,17 +248,17 @@ def find_duplicates_in_dir(basedir):
 
 def find_duplicates(paths):
     """Recurse directories to look for duplicate file content
-    
+
     :param paths: directories or files to scan for duplicates
     :return: boolean, whether any duplicates were found
     """
     foundDuplicate = False
     for path in paths:
         if fs.is_file(path):
-            dbg("File: %s" % path)
+            #dbg("File: %s" % path)
             foundDuplicate = process_file(path) or foundDuplicate
         elif fs.is_dir(path):
-            dbg("Basedir: %s" % path)
+            #dbg("Basedir: %s" % path)
             foundDuplicate = find_duplicates_in_dir(path) or foundDuplicate
         elif fs.is_link(path):
             # A link that points to neither a file nor a directory.
