@@ -1,9 +1,9 @@
 
-from util.testing import run_test_suites
+from util.testing import run_packages
 
 def run():
     from . import unit
     from . import user
 
-    return run_test_suites("duprem", locals())
+    return run_packages("duprem", locals())
 
