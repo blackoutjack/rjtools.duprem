@@ -10,7 +10,7 @@ from optparse import OptionParser
 # My custom utility module
 from util import fs
 from util.msg import set_debug, dbg, info, warn, err
-from util.collections import update_multimap
+from util.collection import update_multimap
 from util.type import type_check, type_error
 
 from .file import File, ImageFile, ImageError
