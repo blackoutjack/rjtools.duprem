@@ -23,5 +23,5 @@ out_basic = '''Duplicate content:
 '''Negative test showing that differing files are not detected as duplicates'''
 run_no_dup = prep([get_filepath("empty1.txt"), get_filepath("basic.txt")])
 
-out_no_dup = 'INFO: No duplicate files found.'
+out_no_dup = 'No duplicate files found.'
 
