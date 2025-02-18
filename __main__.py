@@ -1,34 +1,34 @@
-#
-# Command-line entry point for the duprem module.
-#
+'''Command-line entry point for the duprem module'''
 
-from optparse import OptionParser
+from argparse import ArgumentParser, REMAINDER
 
-from util.msg import info, dbg, set_debug
+from dgutil.msg import info, dbg, set_debug
 
 from .duplicates import find_duplicates, handle_duplicates
 
 def main():
-    parser = OptionParser(usage="python3 -m duprem [-rfg] DIR")
-    parser.add_option(
-        "-g", "--debug", dest="debug", action="store_true",
+    parser = ArgumentParser()
+    parser.add_argument("paths", nargs=REMAINDER, metavar="PATHS...")
+    parser.add_argument("-f", "--force", dest="force", action="store_true",
+        help="With --remove, force removal of all but the first copy of "
+            "duplicate content.")
+    parser.add_argument("-g", "--debug", dest="debug", action="store_true",
         help="Enable debug output")
-    parser.add_option(
-        "-r", "--remove", dest="remove", action="store_true",
+    parser.add_argument("-r", "--remove", dest="remove", action="store_true",
         help="Give the user the option to remove duplicate files.")
-    parser.add_option(
-        "-f", "--force", dest="force", action="store_true",
-        help="With \"remove\", force removal of all but the first copy of duplicate content.")
-    opts, args = parser.parse_args()
-    if len(args) < 1:
-        parser.error(
-            """Provide at least one directory (or multiple files) to \
-scan for duplicates""")
+    opts = parser.parse_args()
 
-    set_debug(opts.debug)
-    #dbg("Arguments: %r" % args)
+    paths = opts.paths
 
-    found = find_duplicates(args)
+    if len(paths) < 1:
+        parser.error("Provide at least one directory (or multiple files) to "
+            "scan for duplicates")
+
+    if opts.debug:
+        set_debug(True)
+    dbg("Paths: %r" % paths)
+
+    found = find_duplicates(paths)
     if found:
         handle_duplicates(opts.remove, opts.force)
     else:
@@ -36,6 +36,7 @@ scan for duplicates""")
 
     return 0
 
-main()
+if __name__ == "__main__":
+    main()
 
 

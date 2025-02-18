@@ -1,5 +1,5 @@
 
-from util.testing import run_packages
+from dgutil.testing import run_packages
 
 def run():
     from . import unit

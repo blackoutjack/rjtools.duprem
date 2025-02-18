@@ -6,7 +6,7 @@ import io
 import os
 from PIL import Image, UnidentifiedImageError
 
-from util import fs
+from dgutil import fs
 
 BUF_SIZE = 65536
 

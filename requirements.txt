@@ -1,0 +1,1 @@
+-e git+file:///home/rich/dev/util@faf4a8428d14a39e1e353f76780097cb11b11e90#egg=dgutil

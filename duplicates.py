@@ -7,10 +7,10 @@ import os.path
 import hashlib
 
 # My custom utility module
-from util import fs
-from util.msg import err
-from util.collection import update_multimap
-from util.type import type_check, type_error
+from dgutil import fs
+from dgutil.msg import err
+from dgutil.collection import update_multimap
+from dgutil.type import type_check, type_error
 
 from .file import File, ImageFile, ImageError
 
