@@ -3,6 +3,7 @@
 #
 
 import io
+import os
 from PIL import Image, UnidentifiedImageError
 
 from util import fs
@@ -24,7 +25,7 @@ class File:
     def hash(self, hashfn):
         """Hash the file contents
 
-        :param hashfn: a hash object 
+        :param hashfn: a hash object
         :return: string, the hash value
         """
 
@@ -63,7 +64,7 @@ class ImageFile(File):
     def hash(self, hashfn):
         """Hash the image data
 
-        :param hashfn: a hash object 
+        :param hashfn: a hash object
         :return: string, the hash value
         """
 

@@ -5,11 +5,10 @@
 
 import os.path
 import hashlib
-from optparse import OptionParser
 
 # My custom utility module
 from util import fs
-from util.msg import set_debug, dbg, info, warn, err
+from util.msg import err
 from util.collection import update_multimap
 from util.type import type_check, type_error
 
@@ -99,8 +98,7 @@ def delete_select_files(filepaths, force, desc):
                 #dbg("KEEP: %r")
                 delete_files_except(filepaths, keep)
                 break
-            except ValueError as ex:
-                #dbg("E: %s" % str(ex))
+            except ValueError:
                 # Redo the input
                 pass
 
@@ -158,7 +156,7 @@ def already_processed(path):
             # In case of broken symlinks or generally corrupt data.
             if prev_mtime is not None:
                 # The file wasn't corrupt before, but now is
-                err("Failed to get modification date for path %s" % path)
+                err("Failed to get modification date for path %s: %s" % (path, str(ex)))
             else:
                 # Normal case in which a corrupt path was previously processed
                 pass
@@ -263,7 +261,7 @@ def find_duplicates(paths):
         elif fs.is_link(path):
             # A link that points to neither a file nor a directory.
             err("Unresolved link: %s" % path)
-            failures.append(filepath)
+            failures.append(path)
         else:
             err("File not found: %s" % path)
     return foundDuplicate
