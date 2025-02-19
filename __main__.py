@@ -6,7 +6,7 @@ import importlib
 from argparse import ArgumentParser, REMAINDER
 from dgutil.msg import info, dbg, set_debug
 
-from duprem.dup_engine import DupEngine
+from duprem.engine import DupEngine
 
 def validate_options(parser, opts):
 

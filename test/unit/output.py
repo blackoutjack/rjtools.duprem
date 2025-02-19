@@ -2,7 +2,7 @@
 
 import os
 
-from duprem.dup_engine import DupEngine
+from duprem.engine import DupEngine
 from duprem.plugin import image
 
 TEST_DIR = os.path.join("/", "topdir")
