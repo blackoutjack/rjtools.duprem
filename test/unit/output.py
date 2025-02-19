@@ -3,17 +3,17 @@
 import os
 
 from duprem.dup_engine import DupEngine
-from duprem.file import ImageFile
+from duprem.plugin import image
 
 TEST_DIR = os.path.join("/", "topdir")
 TEST_FILE_TREE = os.path.join(TEST_DIR, "filetree")
 
-engine = DupEngine()
+engine = DupEngine([image])
 
 def get_filepath(filename):
     return os.path.join(TEST_FILE_TREE, filename)
 
-files_is_image = [
+image_files = [
         get_filepath("pic1.bmp"),
         get_filepath("pic1.jpg"),
         get_filepath("pic1.tiff"),
@@ -26,7 +26,7 @@ files_is_image = [
         get_filepath("badpic2.jpg"),
     ]
 
-files_not_is_image = [
+non_image_files = [
         get_filepath("basic.txt"),
         get_filepath("notapic.jpg"),
     ]
@@ -34,10 +34,10 @@ files_not_is_image = [
 def test_is_image():
     '''Test that image detection categorizes files appropriately'''
     result = True
-    for file in files_is_image:
-        result &= ImageFile.is_image(file)
-    for file in files_not_is_image:
-        result &= not ImageFile.is_image(file)
+    for file in image_files:
+        result &= engine.plugins[0].can_handle(file)
+    for file in non_image_files:
+        result &= not engine.plugins[0].can_handle(file)
     return result
 
 files_basic = [

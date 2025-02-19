@@ -1,18 +1,17 @@
-#
-# Identify files containing duplicate content within a filesystem location.
-# Intended for use with media files such as images or audio.
-#
+"""
+Identify files containing duplicate content within a filesystem location.
+"""
 
 import os.path
 import hashlib
 
 # My custom utility module
 from dgutil import fs
-from dgutil.msg import dbg, err
+from dgutil.msg import dbg, err, warn
 from dgutil.collection import update_multimap
 from dgutil.type import type_check, type_error
 
-from duprem.file import File, ImageFile, ImageError
+from duprem.file import File, FileError
 
 
 class DupEngine:
@@ -20,24 +19,24 @@ class DupEngine:
     Conduct the duplicate file search and removal.
     """
 
-    def __init__(self):
+    def __init__(self, plugins):
+        self.plugins = plugins
         self.processed_paths = {}
         self.content_paths = {}
-        self.image_content_paths = {}
         self.failures = []
 
-    def display_paths(self, paths):
+    def display_paths(self, files):
         '''Print a zero-indexed list of paths
 
         :param paths: ordered list of paths
         '''
-        for idx, path in enumerate(paths):
-            print(f"{idx}: {path}")
+        for idx, file in enumerate(files):
+            print(f"{idx}: {file.path}")
 
-    def delete_files_except(self, filepaths, keep):
+    def delete_files_except(self, files, keep):
         '''Unlink (i.e. delete) the files, except those at the given index(es).
 
-        :param filepaths: list of files to potentially delete
+        :param files: list of files to potentially delete
         :param keep: integer or list of integer indexes of files to not delete
         '''
 
@@ -52,34 +51,52 @@ class DupEngine:
         else:
             type_error("keep", str(type(keep)), "<class 'int'> or <class list<class int>>")
 
-        for idx, path in enumerate(filepaths):
+        for idx, file in enumerate(files):
             if idx not in keep:
-                print(f"> Deleting: {path}")
-                fs.unlink(path)
+                print(f"> Deleting: {file.path}")
+                fs.unlink(file.path)
             else:
-                print(f">  Keeping: {path}")
+                print(f">  Keeping: {file.path}")
 
-    def delete_select_files(self, filepaths, force, desc):
+    def get_description_from_file_group(self, files, warningOnDifferent=None):
+        filetype = None
+        desc = None
+        for file in files:
+            if filetype is None:
+                filetype = file.typename()
+                desc = file.description()
+            elif filetype != file.typename():
+                if warningOnDifferent is not None:
+                    filelist = "\n".join([f"{f.path} ({f.typename()})" for f in files])
+                    warn(f"{warningOnDifferent}:\n{filelist}")
+                return None
+        return desc
+
+    def delete_select_files(self, files, force):
         '''Delete files as specified by the user, or automatically"
 
-        :param filepaths: file paths to potentially delete
+        :param files: files to potentially delete
         :param force: automatically delete all but the first copy of all duplicates
         :param desc: string description of the type of files being deleted
         :return: whether to continue (i.e., 'q' was not selected)
         '''
-        if len(filepaths) <= 1:
+        if len(files) <= 1:
             return True
+
+        desc = self.get_description_from_file_group(
+            files, "Not deleting duplicate content of variable kinds")
+        if desc is None: return
 
         print(f"Duplicate {desc} content:")
 
         if force:
             # Delete all files except for the first.
-            self.delete_files_except(filepaths, 0)
+            self.delete_files_except(files, 0)
 
         else:
             # Get input from the user for which file to retain.
             choice = None
-            self.display_paths(filepaths)
+            self.display_paths(files)
             print("k: Keep all")
             while True:
                 choice = input(f"Retain which {desc}(s) (comma-separated)? ")
@@ -97,11 +114,11 @@ class DupEngine:
                         #dbg("C: %r" % c)
                         num = int(c.strip())
                         #dbg("NUM: %d" % num)
-                        if num < 0 or num >= len(filepaths):
+                        if num < 0 or num >= len(files):
                             raise ValueError
                         keep.append(num)
                     #dbg("KEEP: %r")
-                    self.delete_files_except(filepaths, keep)
+                    self.delete_files_except(files, keep)
                     break
                 except ValueError:
                     # Redo the input
@@ -112,35 +129,29 @@ class DupEngine:
     def delete_duplicates(self, force):
         '''For each set of duplicate files, ask the user which to keep.
 
-        :param force: automatically delete all but the first copy of all duplicates
+        :param force: automatically delete all but the first copy of duplicates
         '''
-        for filepaths in self.content_paths.values():
-            keepgoing = self.delete_select_files(filepaths, force, "file")
-            if not keepgoing: return
-
-        for imagepaths in self.image_content_paths.values():
-            keepgoing = self.delete_select_files(imagepaths, force, "image")
+        for files in self.content_paths.values():
+            keepgoing = self.delete_select_files(files, force)
             if not keepgoing: return
 
     def display_failures(self):
         '''Output paths that failed to be processed.'''
         if len(self.failures) > 0:
             print("Failures:")
-            for filepath in self.failures:
-                print(f"  {filepath}")
+            for path in self.failures:
+                print(f"  {path}")
 
     def display_duplicates(self):
         '''Output sets of paths that contain duplicate content.'''
 
-        for paths in self.content_paths.values():
-            if len(paths) > 1:
-                print("Duplicate content:")
-                self.display_paths(paths)
-
-        for image_paths in self.image_content_paths.values():
-            if len(image_paths) > 1:
-                print("Duplicate image content:")
-                self.display_paths(image_paths)
+        for files in self.content_paths.values():
+            if len(files) > 1:
+                desc = self.get_description_from_file_group(files)
+                if desc is None: desc = "mixed"
+                desc = " " if desc == "" else f" {desc} "
+                print(f"Duplicate{desc}content:")
+                self.display_paths(files)
 
     def already_processed(self, path):
         '''Note that the filepath has been processed.
@@ -184,7 +195,6 @@ class DupEngine:
 
         self.processed_paths.clear()
         self.content_paths.clear()
-        self.image_content_paths.clear()
         self.failures.clear()
 
     def process_file(self, filepath):
@@ -212,18 +222,20 @@ class DupEngine:
 
         hashfn = hashlib.sha1()
 
-        if ImageFile.is_image(filepath):
-            file = ImageFile(filepath)
-            multimap = self.image_content_paths
-        else:
+        file = None
+        for plugin in self.plugins:
+            if plugin.can_handle(filepath):
+                file = plugin.load_file(filepath)
+                break
+        if file is None:
+            # No plugin was found, so use the default file handler.
             file = File(filepath)
-            multimap = self.content_paths
 
         foundDuplicate = False
         try:
             filehash = file.hash(hashfn)
-            foundDuplicate = update_multimap(multimap, filehash, filepath)
-        except ImageError as ex:
+            foundDuplicate = update_multimap(self.content_paths, filehash, file)
+        except FileError as ex:
             err("%s" % str(ex))
             self.failures.append(filepath)
         self.set_processed(filepath)
@@ -241,9 +253,9 @@ class DupEngine:
         if self.already_processed(basedir):
             return False
 
-        for subdir, dirs, files in fs.walk(basedir):
-            for file in files:
-                filepath = os.path.join(subdir, file)
+        for subdir, dirs, filenames in fs.walk(basedir):
+            for filename in filenames:
+                filepath = os.path.join(subdir, filename)
                 foundDuplicate = self.process_file(filepath) or foundDuplicate
 
         self.set_processed(basedir)
