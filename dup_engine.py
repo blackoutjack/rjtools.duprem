@@ -26,19 +26,19 @@ class DupEngine:
         self.failures = []
 
     def display_paths(self, files):
-        '''Print a zero-indexed list of paths
+        """Print a zero-indexed list of paths
 
-        :param paths: ordered list of paths
-        '''
+        :param files: list of File, print the paths of these in order
+        """
         for idx, file in enumerate(files):
             print(f"{idx}: {file.path}")
 
     def delete_files_except(self, files, keep):
-        '''Unlink (i.e. delete) the files, except those at the given index(es).
+        """Unlink (i.e. delete) the files, except those at the given index(es).
 
         :param files: list of files to potentially delete
         :param keep: integer or list of integer indexes of files to not delete
-        '''
+        """
 
         # Check and prep arguments
         if type(keep) is int:
@@ -58,14 +58,21 @@ class DupEngine:
             else:
                 print(f">  Keeping: {file.path}")
 
-    def get_description_from_file_group(self, files, warningOnDifferent=None):
-        filetype = None
+    def get_description_from_file_group(self, files, warningOnDifferent:str|None=None):
+        """
+        Get a shared description of files in this set, or warn if they differ
+
+        :param files: list of File, files to get the description from
+        :param warningOnDifferent: str|None, warn with this message on mismatch
+            occurs, or ignore mismatch on `None`
+        :return: description shared by all the files
+        :rtype: str|None
+        """
         desc = None
         for file in files:
-            if filetype is None:
-                filetype = file.typename()
+            if desc is None:
                 desc = file.description()
-            elif filetype != file.typename():
+            elif desc != file.description():
                 if warningOnDifferent is not None:
                     filelist = "\n".join([f"{f.path} ({f.typename()})" for f in files])
                     warn(f"{warningOnDifferent}:\n{filelist}")
@@ -73,13 +80,13 @@ class DupEngine:
         return desc
 
     def delete_select_files(self, files, force):
-        '''Delete files as specified by the user, or automatically"
+        """Delete files as specified by the user, or automatically"
 
         :param files: files to potentially delete
         :param force: automatically delete all but the first copy of all duplicates
         :param desc: string description of the type of files being deleted
         :return: whether to continue (i.e., 'q' was not selected)
-        '''
+        """
         if len(files) <= 1:
             return True
 
@@ -107,17 +114,14 @@ class DupEngine:
                     # Tell the calling function to quit.
                     return False
                 try:
+                    # Parse a comma-delimited list of numeric choices
                     choices = choice.split(",")
-                    #dbg("CHOICES: %r" % choices)
                     keep = []
                     for c in choices:
-                        #dbg("C: %r" % c)
                         num = int(c.strip())
-                        #dbg("NUM: %d" % num)
                         if num < 0 or num >= len(files):
                             raise ValueError
                         keep.append(num)
-                    #dbg("KEEP: %r")
                     self.delete_files_except(files, keep)
                     break
                 except ValueError:
@@ -127,23 +131,23 @@ class DupEngine:
         return True
 
     def delete_duplicates(self, force):
-        '''For each set of duplicate files, ask the user which to keep.
+        """For each set of duplicate files, ask the user which to keep.
 
         :param force: automatically delete all but the first copy of duplicates
-        '''
+        """
         for files in self.content_paths.values():
             keepgoing = self.delete_select_files(files, force)
             if not keepgoing: return
 
     def display_failures(self):
-        '''Output paths that failed to be processed.'''
+        """Output paths that failed to be processed."""
         if len(self.failures) > 0:
             print("Failures:")
             for path in self.failures:
                 print(f"  {path}")
 
     def display_duplicates(self):
-        '''Output sets of paths that contain duplicate content.'''
+        """Output sets of paths that contain duplicate content."""
 
         for files in self.content_paths.values():
             if len(files) > 1:
@@ -154,11 +158,11 @@ class DupEngine:
                 self.display_paths(files)
 
     def already_processed(self, path):
-        '''Note that the filepath has been processed.
+        """Note that the filepath has been processed.
 
         :param path: path to the file or directory
         :return: boolean, whether the path processing is up to date
-        '''
+        """
         if path in self.processed_paths:
             prev_mtime = self.processed_paths[path]
             try:
@@ -180,10 +184,10 @@ class DupEngine:
         return False
 
     def set_processed(self, path):
-        '''Note that the path, with modification time, has been processed.
+        """Note that the path, with modification time, has been processed.
 
         :param path: path to the file or directory
-        '''
+        """
         try:
             mtime = fs.get_modify_time(path)
         except OSError:
@@ -198,11 +202,11 @@ class DupEngine:
         self.failures.clear()
 
     def process_file(self, filepath):
-        '''Store the hash the file contents.
+        """Store the hash the file contents.
 
         :param filepath: path to the file
         :return: boolean, whether any duplicates were found
-        '''
+        """
 
         try:
             # Canonicalize the path

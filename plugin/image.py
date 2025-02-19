@@ -1,9 +1,11 @@
 import io
+from typing import override
 
 from PIL import Image, UnidentifiedImageError
 from dgutil import fs
 
 from duprem.file import File, FileError
+
 
 
 def can_handle(filepath):
@@ -33,19 +35,22 @@ class ImageFile(File):
         :raises: UnidentifiedImageError if the file is not a valid image
         :return: image data
         """
+        # Using file api wrapper to redirect to in-memory fs for unit testing
         fl = fs.binary_open(self.path)
         return Image.open(fl)
 
+    @override
     def description(self):
         return "image"
 
+    @override
     def hash(self, hashfn):
         """Hash the image data
 
         :param hashfn: a hash object
-        :return: string, the hash value
+        :return: the hash value
+        :rtype: str
         """
-
         try:
             with self.open() as img, io.BytesIO() as bmpbytes:
                 # Canonicalize by extracting bitmap data
@@ -54,8 +59,8 @@ class ImageFile(File):
                 bmpbytes.seek(0)
                 self.hash_file_bytes(bmpbytes, hashfn)
         except UnidentifiedImageError as ex:
-            raise ImageError("Unable to open %s (%s): %s"
-                    % (self.typename(), str(ex), self.path))
+            raise ImageError("Unable to open %s at %s: %s"
+                    % (self.typename(), self.path, str(ex)))
         except OSError as ex:
             raise ImageError("Failure to extract %s data (%s): %s"
                     % (img.format, str(ex), self.path))
