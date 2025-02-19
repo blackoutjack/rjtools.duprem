@@ -32,7 +32,7 @@ class DupEngine:
         :param paths: ordered list of paths
         '''
         for idx, path in enumerate(paths):
-            print("{idx}: {path}")
+            print(f"{idx}: {path}")
 
     def delete_files_except(self, filepaths, keep):
         '''Unlink (i.e. delete) the files, except those at the given index(es).
@@ -54,10 +54,10 @@ class DupEngine:
 
         for idx, path in enumerate(filepaths):
             if idx not in keep:
-                print("> Deleting: %s" % path)
+                print(f"> Deleting: {path}")
                 fs.unlink(path)
             else:
-                print(">  Keeping: %s" % path)
+                print(f">  Keeping: {path}")
 
     def delete_select_files(self, filepaths, force, desc):
         '''Delete files as specified by the user, or automatically"
@@ -70,7 +70,7 @@ class DupEngine:
         if len(filepaths) <= 1:
             return True
 
-        print("Duplicate %s content:" % desc)
+        print(f"Duplicate {desc} content:")
 
         if force:
             # Delete all files except for the first.
@@ -82,7 +82,7 @@ class DupEngine:
             self.display_paths(filepaths)
             print("k: Keep all")
             while True:
-                choice = input("Retain which %s(s) (comma-separated)? " % desc)
+                choice = input(f"Retain which {desc}(s) (comma-separated)? ")
                 choice = choice.strip()
                 if choice == "k":
                     break
