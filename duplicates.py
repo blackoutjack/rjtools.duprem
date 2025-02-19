@@ -8,11 +8,11 @@ import hashlib
 
 # My custom utility module
 from dgutil import fs
-from dgutil.msg import err
+from dgutil.msg import dbg, err
 from dgutil.collection import update_multimap
 from dgutil.type import type_check, type_error
 
-from .file import File, ImageFile, ImageError
+from duprem.file import File, ImageFile, ImageError
 
 # Paths that have already been evaluated
 processed_paths = {}
@@ -122,7 +122,7 @@ def display_failures():
     if len(failures) > 0:
         print("Failures:")
         for filepath in failures:
-            print("  %s" % filepath)
+            print(f"  {filepath}")
 
 def display_duplicates():
     '''Output sets of paths that contain duplicate content.'''
@@ -203,7 +203,7 @@ def process_file(filepath):
     if already_processed(filepath):
         return False
 
-    #dbg("Processing %s" % filepath)
+    dbg("Processing %s" % filepath)
 
     hashfn = hashlib.sha1()
 
@@ -253,10 +253,10 @@ def find_duplicates(paths):
     foundDuplicate = False
     for path in paths:
         if fs.is_file(path):
-            #dbg("File: %s" % path)
+            dbg("File: %s" % path)
             foundDuplicate = process_file(path) or foundDuplicate
         elif fs.is_dir(path):
-            #dbg("Basedir: %s" % path)
+            dbg("Basedir: %s" % path)
             foundDuplicate = find_duplicates_in_dir(path) or foundDuplicate
         elif fs.is_link(path):
             # A link that points to neither a file nor a directory.
