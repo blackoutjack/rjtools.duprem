@@ -5,7 +5,7 @@ from argparse import ArgumentParser, REMAINDER
 
 from dgutil.msg import info, dbg, set_debug
 
-from duprem.duplicates import find_duplicates, handle_duplicates
+from duprem.dup_engine import DupEngine
 
 def validate_options(parser, opts):
 
@@ -40,9 +40,10 @@ def load_options():
     return opts
 
 def run(opts):
-    found = find_duplicates(opts.paths)
+    engine = DupEngine()
+    found = engine.find_duplicates(opts.paths)
     if found:
-        handle_duplicates(opts.remove, opts.force)
+        engine.handle_duplicates(opts.remove, opts.force)
     else:
         info("No duplicate files found.")
 

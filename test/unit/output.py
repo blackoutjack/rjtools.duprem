@@ -2,12 +2,13 @@
 
 import os
 
-from duprem.duplicates import find_duplicates, display_duplicates, display_failures, clear
+from duprem.dup_engine import DupEngine
 from duprem.file import ImageFile
 
-#TEST_DIR = os.path.dirname(os.path.dirname(__file__))
 TEST_DIR = os.path.join("/", "topdir")
 TEST_FILE_TREE = os.path.join(TEST_DIR, "filetree")
+
+engine = DupEngine()
 
 def get_filepath(filename):
     return os.path.join(TEST_FILE_TREE, filename)
@@ -46,9 +47,9 @@ files_basic = [
 
 def test_basic():
     '''Test basic duplicate file detection'''
-    clear()
-    foundDups = find_duplicates(files_basic)
-    display_duplicates()
+    engine.clear()
+    foundDups = engine.find_duplicates(files_basic)
+    engine.display_duplicates()
     return foundDups
 
 out_basic = """Duplicate content:
@@ -62,9 +63,9 @@ files_no_dups = [
 
 def test_no_dups():
     '''Test a negative case for duplicate file detection'''
-    clear()
-    foundDups = find_duplicates(files_no_dups)
-    display_duplicates()
+    engine.clear()
+    foundDups = engine.find_duplicates(files_no_dups)
+    engine.display_duplicates()
     return not foundDups
 
 out_no_dups = ""
@@ -77,9 +78,9 @@ files_jpeg_different_header = [
 
 def test_jpeg_dup():
     '''Test a case of duplicate JPEG detection with differing headers'''
-    clear()
-    foundDups = find_duplicates(files_jpeg_different_header)
-    display_duplicates()
+    engine.clear()
+    foundDups = engine.find_duplicates(files_jpeg_different_header)
+    engine.display_duplicates()
     return foundDups
 
 out_jpeg_dup = """Duplicate image content:
@@ -94,9 +95,9 @@ files_jpeg_different_image = [
 
 def test_jpeg_diff():
     '''Test a negative case for duplicate JPEG detection'''
-    clear()
-    foundDups = find_duplicates(files_jpeg_different_image)
-    display_duplicates()
+    engine.clear()
+    foundDups = engine.find_duplicates(files_jpeg_different_image)
+    engine.display_duplicates()
     return not foundDups
 
 out_jpeg_diff = ""
@@ -109,9 +110,9 @@ files_jpeg_extension = [
 
 def test_jpeg_extension():
     '''Test duplicate JPEG detection when the files have different extensions'''
-    clear()
-    foundDups = find_duplicates(files_jpeg_extension)
-    display_duplicates()
+    engine.clear()
+    foundDups = engine.find_duplicates(files_jpeg_extension)
+    engine.display_duplicates()
     return foundDups
 
 out_jpeg_extension = """Duplicate image content:
@@ -125,9 +126,9 @@ files_jpg_text = [
 
 def test_jpg_text():
     '''Ensure a text file with JPEG extension does not cause a failure'''
-    clear()
-    foundDups = find_duplicates(files_jpg_text)
-    display_failures()
+    engine.clear()
+    foundDups = engine.find_duplicates(files_jpg_text)
+    engine.display_failures()
     return not foundDups
 
 out_jpg_text = ""
@@ -142,9 +143,9 @@ files_twice = [
 
 def test_twice():
     '''Test that processing one file twice is not reported as a duplicate'''
-    clear()
-    foundDups = find_duplicates(files_twice)
-    display_duplicates()
+    engine.clear()
+    foundDups = engine.find_duplicates(files_twice)
+    engine.display_duplicates()
     return not foundDups
 
 out_twice = ""
@@ -157,9 +158,9 @@ files_data_failure = [
 
 def test_data_failure():
     '''Test a JPEG file with corrupt data, and the resulting error'''
-    clear()
-    foundDups = find_duplicates(files_data_failure)
-    display_failures()
+    engine.clear()
+    foundDups = engine.find_duplicates(files_data_failure)
+    engine.display_failures()
     return not foundDups
 
 out_data_failure = """Failures:
@@ -175,9 +176,9 @@ files_bmp_dup = [
 
 def test_bmp_dup():
     '''Test detection of duplicate BMP data'''
-    clear()
-    foundDups = find_duplicates(files_bmp_dup)
-    display_duplicates()
+    engine.clear()
+    foundDups = engine.find_duplicates(files_bmp_dup)
+    engine.display_duplicates()
     return foundDups
 
 out_bmp_dup = """Duplicate image content:
@@ -192,9 +193,9 @@ files_bmp_jpg = [
 
 def test_bmp_jpg():
     '''Test detection of duplicate image data in JPEG and BMP files'''
-    clear()
-    foundDups = find_duplicates(files_bmp_jpg)
-    display_duplicates()
+    engine.clear()
+    foundDups = engine.find_duplicates(files_bmp_jpg)
+    engine.display_duplicates()
     return foundDups
 
 out_bmp_jpg = """Duplicate image content:
@@ -209,9 +210,9 @@ files_tiff_dup = [
 
 def test_tiff_dup():
     '''Test detection of duplicate image data in TIFF files'''
-    clear()
-    foundDups = find_duplicates(files_tiff_dup)
-    display_duplicates()
+    engine.clear()
+    foundDups = engine.find_duplicates(files_tiff_dup)
+    engine.display_duplicates()
     return foundDups
 
 out_tiff_dup = """Duplicate image content:
@@ -226,9 +227,9 @@ files_tiff_jpg = [
 
 def test_tiff_jpg():
     '''Test detection of duplicate image data in TIFF and JPEG files'''
-    clear()
-    foundDups = find_duplicates(files_tiff_jpg)
-    display_duplicates()
+    engine.clear()
+    foundDups = engine.find_duplicates(files_tiff_jpg)
+    engine.display_duplicates()
     return foundDups
 
 out_tiff_jpg = """Duplicate image content:
