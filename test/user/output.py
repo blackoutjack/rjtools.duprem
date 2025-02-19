@@ -2,6 +2,8 @@
 
 import os
 
+from dgutil.testutil import Grep
+
 def prep(args):
     args.insert(0, "python3")
     args.insert(1, "-m")
@@ -25,3 +27,8 @@ run_no_dup = prep([get_filepath("empty1.txt"), get_filepath("basic.txt")])
 
 out_no_dup = 'No duplicate files found.'
 
+run_force_no_remove = prep(["--force", get_filepath("empty1")])
+
+code_force_no_remove = 2
+
+err_force_no_remove = Grep("Cannot force removal without --remove")

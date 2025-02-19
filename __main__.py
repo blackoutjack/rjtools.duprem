@@ -1,10 +1,16 @@
-"""Duplicate file detection and removal"""
+"""
+Duplicate file detection and removal
+
+This program contains some Linux-specific logic, so using on Windows is not
+recommended.
+"""
 
 import sys
 import importlib
 
 from argparse import ArgumentParser, REMAINDER
-from dgutil.msg import info, dbg, set_debug
+from dgutil.msg import info, err, dbg, set_debug
+from dgutil.fs import is_root
 
 from duprem.engine import DupEngine
 
@@ -16,8 +22,15 @@ def validate_options(parser, opts):
             "duplicates")
     dbg("Paths: %r" % opts.paths)
 
-    if opts.force and not opts.remove:
-        parser.error("Cannot force removal without --remove")
+    if opts.force:
+        if not opts.remove:
+            parser.error("Cannot force removal without --remove")
+        if platform.system() == 'Windows':
+            parser.error(
+                "duprem has not been tested on Windows, --force not allowed")
+        if any([is_root(path) for path in opts.paths]):
+            parser.error(
+                "not allowing --force when paths include filesystem root")
 
 def load_plugins(parser, opts):
     loadedPlugins = []
@@ -59,6 +72,13 @@ def load_options():
     return opts, plugins
 
 def run(opts, plugins):
+    """
+    Find duplicate files within the provide paths, and list sets of duplicate
+    files, optionally deleting certain copies.
+
+    :param opts: argparse.Namespace:
+    :param plugins: list of ModuleType:
+    """
     engine = DupEngine(plugins)
     found = engine.find_duplicates(opts.paths)
     if found:
