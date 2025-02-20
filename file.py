@@ -2,7 +2,7 @@
 Class implementing duplicate identification for general files.
 """
 
-from dgutil import fs
+from rjtools.util import fs
 
 BUF_SIZE = 65536
 

@@ -8,7 +8,7 @@ Python application that scans a set of directories to identify duplicate files.
 
 The following are installed with the `pip` command under **Installation**.
 
-* [`dgutil`](https://github.com/blackoutjack/dgutil)
+* [`rjtools.util`](https://github.com/blackoutjack/rjtools.util)
 * [`pillow`](https://github.com/python-pillow)
 
 This application has only been tested on Linux. Use on Windows is not

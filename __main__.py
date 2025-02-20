@@ -9,8 +9,8 @@ import sys
 import importlib
 
 from argparse import ArgumentParser, REMAINDER
-from dgutil.msg import info, err, dbg, set_debug
-from dgutil.fs import is_root
+from rjtools.util.msg import info, err, dbg, set_debug
+from rjtools.util.fs import is_root
 
 from duprem.engine import DupEngine, DEFAULT_THREADS
 

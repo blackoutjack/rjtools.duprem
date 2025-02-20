@@ -1,5 +1,5 @@
 """
-Mock filesystem contents for duprem units; originally copied from dgutil.test
+Mock filesystem contents for duprem units; originally copied from rjtools.util.test
 """
 
 files = {

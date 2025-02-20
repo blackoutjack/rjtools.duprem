@@ -2,7 +2,7 @@ import io
 from typing import override
 
 from PIL import Image, UnidentifiedImageError
-from dgutil import fs
+from rjtools.util import fs
 
 from duprem.file import File, FileError
 

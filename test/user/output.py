@@ -2,7 +2,7 @@
 
 import os
 
-from dgutil.testutil import Grep
+from rjtools.util.testutil import Grep
 
 def prep(args):
     args.insert(0, "python3")

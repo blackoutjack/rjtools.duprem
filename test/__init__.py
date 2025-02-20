@@ -1,5 +1,5 @@
 
-from dgutil.testing import run_packages
+from rjtools.util.testing import run_packages
 
 def run():
     from . import unit

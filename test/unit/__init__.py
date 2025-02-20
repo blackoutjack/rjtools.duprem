@@ -1,7 +1,7 @@
 
-from dgutil.testing import run_modules
+from rjtools.util.testing import run_modules
 
-from dgutil import fs
+from rjtools.util import fs
 from .testfs import files as mockfiles
 
 def run():

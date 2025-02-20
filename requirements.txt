@@ -1,2 +1,2 @@
 pillow==11.1.0
--e git+file:///home/rich/dev/dgutil@6e5055cfb1f0f34d1facc32a47ff17519f871a58#egg=dgutil
+-e git+https://github.com/blackoutjack/rjtools.util@4ec353dfc5b2d81c4f22ff77628338c18aab1e7a#egg=util

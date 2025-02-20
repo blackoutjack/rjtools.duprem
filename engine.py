@@ -8,10 +8,10 @@ from queue import Queue
 from threading import Thread, RLock
 
 # My custom utility module
-from dgutil import fs
-from dgutil.msg import dbg, err, warn
-from dgutil.collection import update_multimap
-from dgutil.type import type_check, type_error
+from rjtools.util import fs
+from rjtools.util.msg import dbg, err, warn
+from rjtools.util.collection import update_multimap
+from rjtools.util.type import type_check, type_error
 
 from duprem.file import File, FileError
 
