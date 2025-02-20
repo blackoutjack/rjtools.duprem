@@ -1,12 +1,13 @@
 
-from dgutil.testing import init_stubs, run_modules
+from dgutil.testing import run_modules
 
 from dgutil import fs
+from .testfs import files as mockfiles
 
 def run():
     from . import output
 
-    init_stubs(fs) 
+    fs.install_mocks(mockfiles)
 
     return run_modules("duprem.unit", locals())
 

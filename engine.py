@@ -4,6 +4,8 @@ Identify files containing duplicate content within a filesystem location.
 
 import os.path
 import hashlib
+from queue import Queue
+from threading import Thread, RLock
 
 # My custom utility module
 from dgutil import fs
@@ -13,6 +15,12 @@ from dgutil.type import type_check, type_error
 
 from duprem.file import File, FileError
 
+
+MULTITHREADED = False
+THREAD_COUNT = 7
+
+map_lock = RLock()
+processed_lock = RLock()
 
 class DupEngine:
     """
@@ -24,6 +32,8 @@ class DupEngine:
         self.processed_paths = {}
         self.content_paths = {}
         self.failures = []
+
+        self.queue = Queue()
 
     def display_paths(self, files):
         """Print a zero-indexed list of paths
@@ -213,14 +223,17 @@ class DupEngine:
             filepath = fs.get_real_path(filepath, strict=True)
         except OSError as ex:
             # Only produce failure output once for this invalid path.
-            if not self.already_processed(filepath):
-                err("Unable to open path %s (%s)" % (filepath, str(ex)))
-                self.failures.append(filepath)
-                self.set_processed(filepath)
+            with processed_lock:
+                if not self.already_processed(filepath):
+                    err("Unable to open path %s (%s)" % (filepath, str(ex)))
+                    self.failures.append(filepath)
+                    self.set_processed(filepath)
             return False
 
-        if self.already_processed(filepath):
-            return False
+        with processed_lock:
+            if self.already_processed(filepath):
+                return False
+            self.set_processed(filepath)
 
         dbg("Processing %s" % filepath)
 
@@ -238,11 +251,11 @@ class DupEngine:
         foundDuplicate = False
         try:
             filehash = file.hash(hashfn)
-            foundDuplicate = update_multimap(self.content_paths, filehash, file)
+            with map_lock:
+                foundDuplicate = update_multimap(self.content_paths, filehash, file)
         except FileError as ex:
             err("%s" % str(ex))
             self.failures.append(filepath)
-        self.set_processed(filepath)
 
         return foundDuplicate
 
@@ -256,13 +269,39 @@ class DupEngine:
 
         if self.already_processed(basedir):
             return False
-
-        for subdir, dirs, filenames in fs.walk(basedir):
-            for filename in filenames:
-                filepath = os.path.join(subdir, filename)
-                foundDuplicate = self.process_file(filepath) or foundDuplicate
-
         self.set_processed(basedir)
+
+        if MULTITHREADED:
+            q = Queue()
+
+            def worker():
+                while True:
+                    filepath = q.get()
+                    foundDup = self.process_file(filepath)
+                    nonlocal foundDuplicate
+                    if foundDup: foundDuplicate = True
+                    q.task_done()
+
+            for threadNum in range(THREAD_COUNT):
+                t = Thread(
+                    name="process_file%d" % threadNum,
+                    target=worker,
+                    args=[])
+                t.daemon = True
+                t.start()
+
+            for subdir, dirs, filenames in fs.walk(basedir):
+                for filename in filenames:
+                    filepath = os.path.join(subdir, filename)
+                    q.put(filepath)
+
+            q.join()
+        else:
+            for subdir, dirs, filenames in fs.walk(basedir):
+                for filename in filenames:
+                    filepath = os.path.join(subdir, filename)
+                    foundDuplicate = self.process_file(filepath) or foundDuplicate
+
         return foundDuplicate
 
     def find_duplicates(self, paths):
