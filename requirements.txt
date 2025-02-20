@@ -1,2 +1,2 @@
 pillow==11.1.0
--e git+file:///home/rich/dev/util@3cb8ae4faa32d3b08dabf75c4ada90aa932d2038#egg=dgutil
+-e git+file:///home/rich/dev/dgutil@6bfb0ad4b23b91d6f0decbca7ee031de43a1168f#egg=dgutil
