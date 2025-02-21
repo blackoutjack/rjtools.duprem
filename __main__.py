@@ -7,9 +7,10 @@ recommended.
 
 import sys
 import importlib
+import platform
 
 from argparse import ArgumentParser, REMAINDER
-from rjtools.util.msg import info, err, dbg, set_debug
+from rjtools.util.msg import info, dbg, set_debug
 from rjtools.util.fs import is_root
 
 from duprem.engine import DupEngine, DEFAULT_THREADS
@@ -28,7 +29,7 @@ def validate_options(parser, opts):
             if threads < 1 or threads > 16:
                 parser.error("Threads should be 1 to 16")
             opts.threads = threads
-        except ValueError as ex:
+        except ValueError:
             parser.error("Value of --threads must be an integer")
 
     if opts.force:
@@ -55,7 +56,7 @@ def load_plugins(parser, opts):
             parser.error(f"Unable to load plugin {plugin}")
     return loadedPlugins
 
-def load_options():
+def load_argument_parser():
     parser = ArgumentParser()
     parser.add_argument("paths", nargs=REMAINDER, metavar="PATHS...")
     parser.add_argument("-f", "--force", dest="force", action="store_true",
@@ -71,6 +72,12 @@ def load_options():
     parser.add_argument("-t", "--threads", dest="threads", action="store",
         default=DEFAULT_THREADS,
         help="Number of threads to use for file processing")
+
+    return parser
+
+def load_options():
+
+    parser = load_argument_parser()
 
     opts = parser.parse_args()
 

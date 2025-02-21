@@ -6,8 +6,6 @@ from rjtools.util import fs
 
 from duprem.file import File, FileError
 
-
-
 def can_handle(filepath):
     try:
         img = ImageFile(filepath)
