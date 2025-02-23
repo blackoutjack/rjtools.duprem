@@ -1,4 +1,4 @@
-# duprem duplicate file removal utility
+# duprem: duplicate file removal utility
 
 Python application that scans a set of directories to identify duplicate files.
 
@@ -33,10 +33,10 @@ is produced.
 
 This command will look through `some/dir` for duplicate files, and will give
 the user the option to remove one or more of the duplicates. The image plugin
-is used for smarter duplicate detection in image content (non-image
-files in the directory will still also be evaluated against other also).
+is used for smarter duplicate detection in image content (non-image files in
+the directory will still also be evaluated against each other also).
 
-    python3 -m duprem some/dir -t image --remove
+    python3 -m duprem some/dir -p image --remove
 
 ## Plugins
 

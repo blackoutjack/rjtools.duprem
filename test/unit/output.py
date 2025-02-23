@@ -62,9 +62,12 @@ files_no_dups = [
     ]
 
 def test_no_dups():
-    '''Test a negative case for duplicate file detection'''
+    '''
+    Test a negative case for duplicate file detection.
+    Throw in single-threadedness for the heck of it.
+    '''
     engine.clear()
-    foundDups = engine.find_duplicates(files_no_dups)
+    foundDups = engine.find_duplicates(files_no_dups, threads=1)
     engine.display_duplicates()
     return not foundDups
 

@@ -16,8 +16,7 @@ from dgutil.type import type_check, type_error
 from duprem.file import File, FileError
 
 
-MULTITHREADED = False
-THREAD_COUNT = 7
+DEFAULT_THREADS = 4
 
 map_lock = RLock()
 processed_lock = RLock()
@@ -259,19 +258,20 @@ class DupEngine:
 
         return foundDuplicate
 
-    def find_duplicates_in_dir(self, basedir):
+    def find_duplicates_in_dir(self, basedir, threads=DEFAULT_THREADS):
         """Recursively walk a directory to generate file hashes.
 
         :param basedir: the top directory
         :return: boolean, whether any duplicates were found
         """
+
         foundDuplicate = False
 
         if self.already_processed(basedir):
             return False
         self.set_processed(basedir)
 
-        if MULTITHREADED:
+        if threads > 1:
             q = Queue()
 
             def worker():
@@ -282,7 +282,7 @@ class DupEngine:
                     if foundDup: foundDuplicate = True
                     q.task_done()
 
-            for threadNum in range(THREAD_COUNT):
+            for threadNum in range(threads):
                 t = Thread(
                     name="process_file%d" % threadNum,
                     target=worker,
@@ -304,12 +304,13 @@ class DupEngine:
 
         return foundDuplicate
 
-    def find_duplicates(self, paths):
+    def find_duplicates(self, paths, threads=DEFAULT_THREADS):
         """Recurse directories to look for duplicate file content
 
         :param paths: directories or files to scan for duplicates
         :return: boolean, whether any duplicates were found
         """
+
         foundDuplicate = False
         for path in paths:
             if fs.is_file(path):
@@ -317,7 +318,7 @@ class DupEngine:
                 foundDuplicate = self.process_file(path) or foundDuplicate
             elif fs.is_dir(path):
                 dbg("Basedir: %s" % path)
-                foundDuplicate = self.find_duplicates_in_dir(path) or foundDuplicate
+                foundDuplicate = self.find_duplicates_in_dir(path, threads) or foundDuplicate
             elif fs.is_link(path):
                 # A link that points to neither a file nor a directory.
                 err("Unresolved link: %s" % path)

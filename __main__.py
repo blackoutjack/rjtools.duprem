@@ -12,7 +12,7 @@ from argparse import ArgumentParser, REMAINDER
 from dgutil.msg import info, err, dbg, set_debug
 from dgutil.fs import is_root
 
-from duprem.engine import DupEngine
+from duprem.engine import DupEngine, DEFAULT_THREADS
 
 def validate_options(parser, opts):
 
@@ -21,6 +21,15 @@ def validate_options(parser, opts):
             "Provide at least one directory (or multiple files) to scan for "
             "duplicates")
     dbg("Paths: %r" % opts.paths)
+
+    if opts.threads is not None:
+        try:
+            threads = int(opts.threads)
+            if threads < 1 or threads > 16:
+                parser.error("Threads should be 1 to 16")
+            opts.threads = threads
+        except ValueError as ex:
+            parser.error("Value of --threads must be an integer")
 
     if opts.force:
         if not opts.remove:
@@ -54,11 +63,14 @@ def load_options():
             "duplicate content without asking.")
     parser.add_argument("-g", "--debug", dest="debug", action="store_true",
         help="Enable debug output")
-    parser.add_argument("-r", "--remove", dest="remove", action="store_true",
-        help="Give the user the option to remove duplicate files.")
-    parser.add_argument("-t", "--type", dest="plugins", action="append",
+    parser.add_argument("-p", "--plugin", dest="plugins", action="append",
         default=[], help="File types (defined in [duprem]/plugin) to use for "
             "special duplicate detection logic")
+    parser.add_argument("-r", "--remove", dest="remove", action="store_true",
+        help="Give the user the option to remove duplicate files.")
+    parser.add_argument("-t", "--threads", dest="threads", action="store",
+        default=DEFAULT_THREADS,
+        help="Number of threads to use for file processing")
 
     opts = parser.parse_args()
 
@@ -80,7 +92,7 @@ def run(opts, plugins):
     :param plugins: list of ModuleType:
     """
     engine = DupEngine(plugins)
-    found = engine.find_duplicates(opts.paths)
+    found = engine.find_duplicates(opts.paths, opts.threads)
     if found:
         engine.handle_duplicates(opts.remove, opts.force)
     else:
