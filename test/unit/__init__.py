@@ -6,8 +6,9 @@ from .testfs import files as mockfiles
 
 def run():
     from . import output
+    from . import options
 
     fs.install_mocks(mockfiles)
 
-    return run_modules("duprem.unit", locals())
+    return run_modules("duprem.test.unit", locals())
 
