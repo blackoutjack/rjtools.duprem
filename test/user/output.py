@@ -19,14 +19,23 @@ run_full_dir = cmd(["-t", "1", TEST_DIR])
 
 out_full_dir = """
 Duplicate content:
-0: %TESTDIR%/empty1.txt
-1: %TESTDIR%/empty2.txt
-Duplicate content:
-0: %TESTDIR%/pic1.jpg
-1: %TESTDIR%/pic4.JPEG
+0: %TESTDIR%/pic4.JPEG
+1: %TESTDIR%/pic1.jpg
 """
 
-'''Basic test ensuring that empty files are detected as duplicates'''
+run_hidden = cmd(["-H", TEST_DIR])
+
+out_hidden = Grep("""Duplicate content:
+0: %TESTDIR%/.hiddenrc
+1: %TESTDIR%/.anotherhidden""")
+
+run_empty = cmd(["-E", TEST_DIR])
+
+out_empty = Grep("""Duplicate content:
+0: %TESTDIR%/empty1.txt
+1: %TESTDIR%/empty2.txt""")
+
+'''Basic test ensuring that empty files are processed when user says so'''
 run_basic = cmd([path("empty1.txt"), path("empty2.txt")])
 
 out_basic = '''

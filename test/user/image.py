@@ -17,9 +17,6 @@ def path(filename):
 run_full_dir = cmd(["-t", "1", TEST_DIR])
 
 out_full_dir = """
-Duplicate content:
-0: %TESTDIR%/empty1.txt
-1: %TESTDIR%/empty2.txt
 Duplicate image content:
 0: %TESTDIR%/pic4.JPEG
 1: %TESTDIR%/pic1.bmp

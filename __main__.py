@@ -64,6 +64,10 @@ def load_argument_parser():
             "duplicate content without asking.")
     parser.add_argument("-g", "--debug", dest="debug", action="store_true",
         help="Enable debug output")
+    parser.add_argument("-E", "--include-empty", dest="doEmpty", action="store_true",
+        help="Include empty files in duplicate analysis")
+    parser.add_argument("-H", "--include-hidden", dest="doHidden", action="store_true",
+        help="Include hidden files in duplicate analysis")
     parser.add_argument("-p", "--plugin", dest="plugins", action="append",
         default=[], help="File types (defined in [duprem]/plugin) to use for "
             "special duplicate detection logic")
@@ -99,7 +103,7 @@ def run(opts, plugins):
     :param plugins: list of ModuleType:
     """
     engine = DupEngine(plugins)
-    found = engine.find_duplicates(opts.paths, opts.threads)
+    found = engine.find_duplicates(opts.paths, opts.doHidden, opts.doEmpty, opts.threads)
     if found:
         engine.handle_duplicates(opts.remove, opts.force)
     else:

@@ -153,7 +153,7 @@ class DupEngine:
         if len(self.failures) > 0:
             print("Failures:")
             for path in self.failures:
-                print(f"  {path}")
+                print(path)
 
     def display_duplicates(self):
         """Output sets of paths that contain duplicate content."""
@@ -258,7 +258,7 @@ class DupEngine:
 
         return foundDuplicate
 
-    def find_duplicates_in_dir(self, basedir, threads=DEFAULT_THREADS):
+    def find_duplicates_in_dir(self, basedir, doHidden=False, doEmpty=False, threads=DEFAULT_THREADS):
         """Recursively walk a directory to generate file hashes.
 
         :param basedir: the top directory
@@ -277,9 +277,14 @@ class DupEngine:
             def worker():
                 while True:
                     filepath = q.get()
-                    foundDup = self.process_file(filepath)
-                    nonlocal foundDuplicate
-                    if foundDup: foundDuplicate = True
+
+                    if not doHidden and fs.is_hidden(filepath):
+                        pass
+                    elif not doEmpty and fs.is_empty(filepath):
+                        pass
+                    else:
+                        nonlocal foundDuplicate
+                        foundDuplicate = self.process_file(filepath) or foundDuplicate
                     q.task_done()
 
             for threadNum in range(threads):
@@ -300,11 +305,15 @@ class DupEngine:
             for subdir, dirs, filenames in fs.walk(basedir):
                 for filename in filenames:
                     filepath = os.path.join(subdir, filename)
+
+                    if not doHidden and fs.is_hidden(filepath): continue
+                    if not doEmpty and fs.is_empty(filepath): continue
+
                     foundDuplicate = self.process_file(filepath) or foundDuplicate
 
         return foundDuplicate
 
-    def find_duplicates(self, paths, threads=DEFAULT_THREADS):
+    def find_duplicates(self, paths, doHidden=False, doEmpty=False, threads=DEFAULT_THREADS):
         """Recurse directories to look for duplicate file content
 
         :param paths: directories or files to scan for duplicates
@@ -313,12 +322,14 @@ class DupEngine:
 
         foundDuplicate = False
         for path in paths:
+            # Not checking for hidden here, the user chose these explicitly.
             if fs.is_file(path):
                 dbg("File: %s" % path)
                 foundDuplicate = self.process_file(path) or foundDuplicate
             elif fs.is_dir(path):
                 dbg("Basedir: %s" % path)
-                foundDuplicate = self.find_duplicates_in_dir(path, threads) or foundDuplicate
+                foundDuplicate = self.find_duplicates_in_dir(
+                    path, doHidden, doEmpty, threads) or foundDuplicate
             elif fs.is_link(path):
                 # A link that points to neither a file nor a directory.
                 err("Unresolved link: %s" % path)
