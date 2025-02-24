@@ -10,5 +10,5 @@ def run():
 
     fs.install_mocks(mockfiles)
 
-    return run_modules("duprem.test.unit", locals())
+    return run_modules("rjtools.duprem.test.unit", locals())
 
