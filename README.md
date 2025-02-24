@@ -1,6 +1,6 @@
 # duprem: duplicate file removal utility
 
-Python application that scans a set of directories to identify duplicate files.
+Scan a set of directories to identify and potentially remove duplicate files.
 
 ## Requirements
 
