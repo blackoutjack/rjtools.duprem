@@ -4,7 +4,7 @@ from typing import override
 from PIL import Image, UnidentifiedImageError
 from rjtools.util import fs
 
-from duprem.file import File, FileError
+from rjtools.duprem.file import File, FileError
 
 def can_handle(filepath):
     try:

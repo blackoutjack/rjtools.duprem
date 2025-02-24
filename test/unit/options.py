@@ -7,7 +7,7 @@ from rjtools.util.testutil import Grep
 
 from argparse import ArgumentError
 
-from duprem.__main__ import validate_options, load_argument_parser
+from rjtools.duprem.__main__ import validate_options, load_argument_parser
 
 
 def test_empty_options():
@@ -24,8 +24,8 @@ def test_empty_options():
     except (SystemExit, ArgumentError) as ex:
         return ex.code == 2
 
-err_empty_options = Grep("error: Provide at least one directory \(or multiple "
-                         "files\) to scan for duplicates")
+err_empty_options = Grep("error: Provide at least one directory (or multiple "
+                         "files) to scan for duplicates")
 
 def test_one_path_only():
     args = ["test/"]

@@ -7,7 +7,7 @@ from rjtools.util.testutil import Grep
 def cmd(args):
     args.insert(0, "python3")
     args.insert(1, "-m")
-    args.insert(2, "duprem")
+    args.insert(2, "rjtools.duprem")
     return args
 
 TEST_DIR = os.path.join(os.path.dirname(__file__), "filetree")

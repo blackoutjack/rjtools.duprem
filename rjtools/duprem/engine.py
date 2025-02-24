@@ -13,7 +13,7 @@ from rjtools.util.msg import dbg, err, warn
 from rjtools.util.collection import update_multimap
 from rjtools.util.type import type_check, type_error
 
-from duprem.file import File, FileError
+from rjtools.duprem.file import File, FileError
 
 
 DEFAULT_THREADS = 4

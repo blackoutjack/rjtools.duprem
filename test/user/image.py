@@ -3,7 +3,7 @@ import os
 def cmd(args):
     args.insert(0, "python3")
     args.insert(1, "-m")
-    args.insert(2, "duprem")
+    args.insert(2, "rjtools.duprem")
     args.insert(3, "--plugin")
     args.insert(4, "image")
     return args

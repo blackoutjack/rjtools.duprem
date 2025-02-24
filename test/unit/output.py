@@ -2,8 +2,8 @@
 
 import os
 
-from duprem.engine import DupEngine
-from duprem.plugin import image
+from rjtools.duprem.engine import DupEngine
+from rjtools.duprem.plugin import image
 
 TEST_DIR = os.path.join("/", "topdir")
 TEST_FILE_TREE = os.path.join(TEST_DIR, "filetree")

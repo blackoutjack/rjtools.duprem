@@ -13,7 +13,7 @@ from argparse import ArgumentParser, REMAINDER
 from rjtools.util.msg import info, dbg, set_debug
 from rjtools.util.fs import is_root
 
-from duprem.engine import DupEngine, DEFAULT_THREADS
+from rjtools.duprem.engine import DupEngine, DEFAULT_THREADS
 
 def validate_options(parser, opts):
 
@@ -46,7 +46,7 @@ def load_plugins(parser, opts):
     loadedPlugins = []
     for plugin in opts.plugins:
         try:
-            plugin = importlib.import_module(f"duprem.plugin.{plugin}")
+            plugin = importlib.import_module(f"rjtools.duprem.plugin.{plugin}")
             if not hasattr(plugin, "can_handle"):
                 parser.error(f"Plugin {plugin} does not implement can_handle")
             if not hasattr(plugin, "load_file"):

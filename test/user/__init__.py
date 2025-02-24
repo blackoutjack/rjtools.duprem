@@ -5,5 +5,5 @@ def run():
     from . import output
     from . import image
 
-    return run_modules("duprem.user", locals())
+    return run_modules("rjtools.duprem.user", locals())
 
