@@ -16,31 +16,43 @@ recommended.
 
 ## Installation
 
-    python3 -m venv ./venv
-    source ./venv/bin/activate
-    pip install -r requirements.txt
+From the top directory of the repo, run the following
 
-Then run `./venv/bin/activate` to set up the virtual env in each terminal
-session where you'd like to run duprem.
+```shell_session
+python3 -m venv ./venv
+source ./venv/bin/activate
+pip install -r requirements.txt
+```
+
+Each time you open a new terminal to run *duprem*, run the following to set up
+the virtual env.
+
+```shell_session
+source ./venv/bin/activate
+```
 
 ## Example usage
 
-The following command will search through `path/to/my/files` and `another/dir`
+The following command will search through *path/to/my/files* and *another/dir*
 for files whose contents are identical. A listing of sets of identical files
 is produced.
 
-    python3 -m duprem path/to/my/files another/dir
+```shell_session
+python3 -m rjtools.duprem path/to/my/files another/dir
+```
 
-This command will look through `some/dir` for duplicate files, and will give
+This command will look through *some/dir* for duplicate files, and will give
 the user the option to remove one or more of the duplicates. The image plugin
 is used for smarter duplicate detection in image content (non-image files in
 the directory will still also be evaluated against each other also).
 
-    python3 -m duprem some/dir -p image --remove
+```shell_session
+python3 -m rjtools.duprem some/dir -p image --remove
+```
 
 ## Plugins
 
-Modules can be added to the `plugin` directory to improve duplicate detection
-for particular file types. See the example of `duprem.plugin.image`, which can
+Modules can be added to the *plugin* directory to improve duplicate detection
+for particular file types. See the example of `rjtools.duprem.plugin.image`, which can
 detect duplicate image data in files with different encodings.
 
