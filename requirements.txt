@@ -1,2 +1,2 @@
 pillow==11.1.0
-git+https://github.com/blackoutjack/rjtools.util@0.0.4#egg=rjtools.util
+git+https://github.com/blackoutjack/rjtools.util@0.0.6#egg=rjtools.util

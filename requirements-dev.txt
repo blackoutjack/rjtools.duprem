@@ -1,0 +1,3 @@
+-r requirements.txt
+pylsp-mypy
+mypy==1.15
